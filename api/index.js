@@ -82,5 +82,8 @@ app.get('/profile', async (req, res) => {
     }
 });
 
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json(true); // clear cookie on logout
+});
 
 app.listen(4000);

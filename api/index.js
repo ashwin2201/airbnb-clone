@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const cookieParser = require('cookie-parser');
+const download = require('image-downloader');
 
 require('dotenv').config();
 // require('dotenv').config({ path: 'C:\Users\DELL\Desktop\Projects\airbnb-clone\api\.env' })
@@ -17,6 +18,7 @@ const app = express();
 
 app.use(express.json()); // json parser
 app.use(cookieParser());
+app.use('/uploads', express.static(__dirname + '/uploads')); // serve static files from /uploads
 
 app.use(cors({
     credentials: true,
@@ -84,6 +86,16 @@ app.get('/profile', async (req, res) => {
 
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json(true); // clear cookie on logout
+});
+
+app.post('/upload-by-link', async (req, res) => {
+    const {link} = req.body;
+    const newName = Date.now() + '.jpg';
+    await download.image({
+      url: link,
+      dest: __dirname + '/uploads/' + newName
+    });
+    res.json(newName);
 });
 
 app.listen(4000);

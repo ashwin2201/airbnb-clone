@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const cookieParser = require('cookie-parser');
 const download = require('image-downloader');
+const multer = require('multer');
+const fs = require('fs');
+const pathLib = require('path');
 
 require('dotenv').config();
 // require('dotenv').config({ path: 'C:\Users\DELL\Desktop\Projects\airbnb-clone\api\.env' })
@@ -90,7 +93,7 @@ app.post('/logout', (req, res) => {
 
 app.post('/upload-by-link', async (req, res) => {
     const {link} = req.body;
-    const newName = Date.now() + '.jpg';
+    const newName = 'photo' + Date.now() + '.jpg';
     await download.image({
       url: link,
       dest: __dirname + '/uploads/' + newName
@@ -98,4 +101,28 @@ app.post('/upload-by-link', async (req, res) => {
     res.json(newName);
 });
 
-app.listen(4000);
+const photosMiddleware = multer({dest:'uploads/'});
+
+app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
+  const uploadedFiles = [];
+
+  for (let i = 0; i < req.files.length; i++) {
+    const {path, originalname} = req.files[i];
+    const parts = originalname.split('.')
+    const ext = parts[parts.length - 1];
+    const newPath = path + '.' + ext;
+
+    try {
+      fs.renameSync(path, newPath);
+      uploadedFiles.push(newPath.replace('uploads' + pathLib.sep, ''));
+    } catch (err) {
+        console.error('File rename error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+  res.json(uploadedFiles);
+});
+
+app.listen(4000, () => {
+    console.log('listening on 4000');
+});

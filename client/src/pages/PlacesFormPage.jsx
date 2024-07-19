@@ -91,7 +91,7 @@ export default function PlacesFormPage() {
                 {preInput('Address', 'Address to this place')}
                 <input type="text" value={address} placeholder="address" onChange={ev => setAddress(ev.target.value)}/>
                 {preInput('Photos', 'more = better')}
-                <PhotosUploader photos={photos} setPhotos={setPhotos}/>
+                <PhotosUploader photos={photos} onChange={setPhotos}/>
                 {preInput('Description', 'describe your place')}
                 <textarea value={description} onChange={ev => setDescription(ev.target.value)}/>
                 {preInput('Perks', 'what makes your place special?')}

@@ -1,6 +1,6 @@
 import { useState, useContext } from "react"
 import { UserContext } from "../UserContext"
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
 import PlacesPage from "./PlacesPage";
 import AccountNav from "../AccountNav";

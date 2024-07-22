@@ -9,7 +9,7 @@ export default function PlacesPage() {
 
     useEffect(() => {
         // fetch places
-        axios.get('/places').then(({data}) => {
+        axios.get('/user-places').then(({data}) => {
             setPlaces(data);
         })
         },[]);

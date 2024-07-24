@@ -173,10 +173,11 @@ app.get('/places', async (req, res) => {
   res.json(await Place.find());
 })
 
-app.post('/bookings', (req, res) => {
+app.post('/bookings', async (req, res) => {
+  const userData = await getUserDataFromToken(req);
   const {place, checkIn, checkOut, 
         numberOfGuests, name, phone, price} = req.body;
-  Booking.create({place, checkIn, checkOut, numberOfGuests, name, phone, price
+  Booking.create({place, checkIn, checkOut, numberOfGuests, name, phone, price, user:userData.id
     }).then((doc) => {
     res.json(doc);
     }).catch(err => {
@@ -184,7 +185,19 @@ app.post('/bookings', (req, res) => {
     });
 });
 
+function getUserDataFromToken(req) {
+  return new Promise ((resolve, reject) => {
+    jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+      if (err) reject(err);
+      resolve(userData);
+    });
+  });
+}
 
+app.get('/bookings', async (req, res) => {
+  const userData = await getUserDataFromToken(req)
+  res.json(await Booking.find({user: userData.id}).populate('place'));
+});
 
 app.listen(4000, () => {
   console.log('listening on 4000');
